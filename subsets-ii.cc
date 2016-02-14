@@ -24,7 +24,8 @@ public:
       // Start appending nums[nextNumIndex]
       int currRetSize = ret.size(); // Remember current ret size since we keep
                                     // appending new entry to ret.
-      int start = 0;  // Append nums[nextNumIndex] to all entries in ret by default
+      // Append nums[nextNumIndex] to all entries in ret by default
+      int start = 0;
       if (nextNumIndex > 0 && nums[nextNumIndex] == nums[nextNumIndex-1]) {
         // We are adding same num as previous one
         // Instead of appending nums[nextNumIndex] to all entries in ret, we
