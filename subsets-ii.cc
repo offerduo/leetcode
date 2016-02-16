@@ -5,47 +5,28 @@
 using namespace std;
 
 class Solution {
-public:
-    void helper(vector<vector<int> > &ret,
-                vector<int>         &nums,
-                int                  nextNumIndex,
-                int                 &lastRetSize)
-    {
-      if (nextNumIndex == -1) {
-        // Base case: add empty vector to ret
-        ret.push_back(vector<int>());
-        return;
-      }
-      // Append nums[nextNumIndex-1] to ret
-      helper(ret, nums, nextNumIndex-1, lastRetSize);
-      // After calling helper, lastRetSize indicates the size of ret before
-      // appending nums[nextNumIndex-1].
-
-      // Start appending nums[nextNumIndex]
-      int currRetSize = ret.size(); // Remember current ret size since we keep
-                                    // appending new entry to ret.
-      // Append nums[nextNumIndex] to all entries in ret by default
+ public:
+  vector<vector<int> > subsetsWithDup(vector<int>& nums) {
+    vector<vector<int> > ret;
+    ret.push_back(vector<int>());
+    if (nums.size() == 0) return ret;
+    sort(nums.begin(), nums.end());
+    int prevRetSize = 0;
+    for (int i = 0; i < nums.size(); ++i) {
+      int currRetSize = ret.size();
       int start = 0;
-      if (nextNumIndex > 0 && nums[nextNumIndex] == nums[nextNumIndex-1]) {
-        // We are adding same num as previous one
-        // Instead of appending nums[nextNumIndex] to all entries in ret, we
-        // only do this to newly added entries starting from index lastRetSize.
-        start = lastRetSize;
+      if (i > 0 && nums[i] == nums[i-1]) {
+        start = prevRetSize;
       }
-      lastRetSize = currRetSize; // Update lastRetSize
-      for (int i = start; i < currRetSize; ++i) {
-        vector<int> newSubset(ret[i]);
-        newSubset.push_back(nums[nextNumIndex]);
-        ret.push_back(newSubset);
+      prevRetSize = currRetSize;
+      for (int j = start; j < currRetSize; ++j) {
+        vector<int> newSubSet = ret[j];
+        newSubSet.push_back(nums[i]);
+        ret.push_back(newSubSet);
       }
     }
-    vector<vector<int> > subsetsWithDup(vector<int>& nums) {
-        vector<vector<int> > ret;
-        sort(nums.begin(), nums.end());
-        int lastRetSize = 0;
-        helper(ret, nums, nums.size()-1, lastRetSize);
-        return ret;
-    }
+    return ret;
+  }
 };
 
 int main(int argc, char *argv[])
