@@ -4,37 +4,36 @@
 using namespace std;
 
 class Solution {
- private:
-  // For a pivot point i that divides prices into [0, i] and [i+1, n-1], the
-  // profit is the sum of max profits of these two time intervals.
-  // We do calculation for all possible pivot points for |prices| and store the
-  // result into |left| and |right|.
-  void helper(vector<int> &prices, vector<int> &left, vector<int> &right) {
-    int local = 0;
-    left[0] = 0;
-    for (int i = 0; i < prices.size()-1; ++i) {
-      int delta = prices[i+1] - prices[i];
-      local = max(0, local+delta);
-      left[i+1] = max(left[i], local);
-    }
-    local = 0;
-    right[prices.size()-1] = 0;
-    for (int i = prices.size()-1; i > 0; --i) {
-      int delta = prices[i] - prices[i-1];
-      local = max(0, local+delta);
-      right[i-1] = max(right[i], local);
-    }
-  }
  public:
   int maxProfit(vector<int>& prices) {
     if (prices.size() <= 1) return 0;
-    int ret = 0;
-    vector<int> left(prices.size()), right(prices.size());
-    helper(prices,left, right);
-    for (int i = 0; i < prices.size(); ++i) {
-      ret = max(ret, left[i]+right[i]);
+    // local[i][j] indicates the max profit at i-th day with up to j
+    // transactions; and last sell must be on i-th day.
+    vector<vector<int> > local(prices.size(), vector<int>(3));
+    // global[i][j] indicates the max profix at i-th day with up to j
+    // transactions; and last sell might be or might not be on i-th day.
+    vector<vector<int> > global(prices.size(), vector<int>(3));
+    for (int i = 1; i < prices.size(); ++i) {
+      for (int j = 1; j < 3; ++j) {
+        int delta = prices[i] - prices[i-1];
+        // To calculate local[i][j], there are two possible cases:
+        // case a: extends last sell to i-th day for local[i-1][j].
+        //         global[i-1][j] cannot be used since the last sell is not
+        //         guaranteed at (i-1)-th day; thus there's not a "extension".
+        // case b: Given global[i-1][j-1] and delta,
+        //         if delta > 0, last transaction is buy at (i-1)-th day, sell
+        //         at i-th day;
+        //         if delta < 0, last transaction is buy and sell at i-th day
+        //         to avoid profit loss.
+        local[i][j] = max(local[i-1][j]+delta,             // case a
+                          global[i-1][j-1]+max(delta, 0)); // case b
+        // To calculate global[i][j], there are two possible cases:
+        // case a: last sell is on i-th day
+        // case b: last sell is on any of the previous days
+        global[i][j] = max(local[i][j], global[i-1][j]);
+      }
     }
-    return ret;
+    return global[prices.size()-1][2];
   }
 };
 
