@@ -1,4 +1,5 @@
 #include "graph.h"
+#include <stack>
 
 using namespace std;
 
@@ -7,19 +8,19 @@ class Solution {
   UndirectedGraphNode *cloneGraph(UndirectedGraphNode *node) {
     if (!node) return NULL;
     UndirectedGraphNode *result = new UndirectedGraphNode(node->label);
-    queue<UndirectedGraphNode *> q;
     unordered_map<UndirectedGraphNode *, UndirectedGraphNode *> nodeMap;
-    q.push(node);
+    stack<UndirectedGraphNode *> s;
     nodeMap[node] = result;
-    while (!q.empty()) {
-      UndirectedGraphNode *src = q.front(); q.pop();
+    s.push(node);
+    while (!s.empty()) {
+      UndirectedGraphNode *src = s.top(); s.pop();
       UndirectedGraphNode *copy = nodeMap[src];
       for (auto neighbor : src->neighbors) {
         if (nodeMap.find(neighbor) == nodeMap.end()) {
           UndirectedGraphNode *neighborCopy =
               new UndirectedGraphNode(neighbor->label);
-          q.push(neighbor);
           nodeMap[neighbor] = neighborCopy;
+          s.push(neighbor);
         }
         copy->neighbors.push_back(nodeMap[neighbor]);
       }
