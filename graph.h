@@ -11,8 +11,6 @@
 #include <utility>
 #include <vector>
 
-// test on git hook
-
 typedef struct UndirectedGraphNode {
   int label;
   std::vector<UndirectedGraphNode *> neighbors;
